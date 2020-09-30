@@ -1,59 +1,78 @@
-<?php 
-$vr = explode("\n", $docker_info);
-
-?>
-<table style="width:100%">
-
-  <tr>
-    <td><div class="card" style="width: 45rem;">
-  <h2>Docker Versiyon</h2>
-  <b><div class="card-body">
-  <pre class="card-text"><?php echo $vr[1]; ?></pre>
-  </div>
-</div></td>
-    <td><div class="card2" style="width: 45rem;">
-  <h2>Servis</h2>
-  <b><div class="card-body">
-    <pre class="card-text"><?php echo $container_info; ?></pre>
-  </div>
-</div></td>
-  </tr>
-</table>
-
-<ul class="nav nav-tabs" id="myTab" role="tablist">
+<ul class="nav nav-tabs" role="tablist" style="margin-bottom: 15px;">
   <li class="nav-item">
-    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Konteynır Listesi</a>
+    <a class="nav-link active" onclick="getIP()" href="#ipTab" data-toggle="tab">IP Bilgileri</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Çalışan Konteynırlar</a>
+    <a class="nav-link" onclick="getCPU()" href="#cpuTab" data-toggle="tab">CPU Bilgileri</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Docker Kurulum</a>
+    <a class="nav-link" onclick="getHost()" href="#hostTab" data-toggle="tab">Host Bilgileri</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" onclick="getDocker()" href="#dockerTab" data-toggle="tab">Docker Versiyon Bilgileri</a>
   </li>
 </ul>
-<div class="tab-content" id="myTabContent">
-  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"><pre id="tab1"><?php echo $container_info; ?></pre></div>
-  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab"><pre id="tab2"><?php echo $runContainer_info; ?></pre></div>
-  <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">http://www.inancdelibalta.com.tr/2018/10/16/pardus-sunucu-uzerine-docker-kurulumu/</div>
+
+<div class="tab-content">
+    <div id="ipTab" class="tab-pane active">
+    <pre id="ipPre"></pre>
+    </div>
+
+    <div id="cpuTab" class="tab-pane">
+    <table id="cpuTable"></table>
+    </div>
+
+    <div id="hostTab" class="tab-pane">
+    <pre id="hostPre"></pre>
+    </div>
+
+    <div id="dockerTab" class="tab-pane">
+    <pre id="dockerPre"></pre>
+    </div>
 </div>
 
-
-
+<script>
+function getIP(){
+  request(API("getIPinfo"), new FormData(), function(response){
+    msg = JSON.parse(response).message
+    $('#ipPre').html(msg);
+  }, function(response){
+    console.log("Error!");
+  })
+}
+function getHost(){
+  request(API("getHOSTinfo"), new FormData(), function(response){
+    msg = JSON.parse(response).message
+    $('#hostPre').html(msg);
+  }, function(response){
+    console.log("Error!");
+  })
+}
+function getCPU(){
+  request(API("getCPUinfo"), new FormData(), function(response){
+    msg = JSON.parse(response).message
+    msg.forEach(function myFunction(item, index) {
+  document.getElementById("cpuTable").innerHTML += "<tr><td>"+ item + "</td></tr>";
+})
+  }, function(response){
+    console.log("Error!");
+  })
+}
+function getDocker(){
+  request(API("getDockerinfo"), new FormData(), function(response){
+    msg = JSON.parse(response).message
+    $('#dockerPre').html(msg[1]);
+  }, function(response){
+    console.log("Error!");
+  })
+}
+if(location.hash === ""){
+    getIP();
+}
+</script>
 
 <style>
-table, tr, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 3px;
-  border-spacing: 5px;
-  text-align: center;
-}
-
-.card-text{
-  height: 100px;
-}
-.nav{
-  display: flex;
-  justify-content: center;
+td{
+  border: 2px solid black;
 }
 </style>
